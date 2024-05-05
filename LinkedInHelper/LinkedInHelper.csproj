@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LH.FileManager\LH.FileManager.csproj" />
+    <ProjectReference Include="..\LH.Models\LH.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

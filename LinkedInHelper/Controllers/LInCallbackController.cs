@@ -4,6 +4,7 @@ using LH.Utility;
 using LinkedInHelper.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LinkedInHelper.Controllers
 {
@@ -41,7 +42,7 @@ namespace LinkedInHelper.Controllers
                 return;
             }
 
-            await _textFile.Save(accessToken, FilePath.Credentials, FileNameConstant.AccessToken);
+            await _textFile.Save(JsonConvert.SerializeObject(accessToken), FilePath.Credentials, FileNameConstant.AccessToken);
 
             _programExecutorService.Execute();
         }

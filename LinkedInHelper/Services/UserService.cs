@@ -1,5 +1,7 @@
-﻿using LH.Utility;
+﻿using LH.Models;
+using LH.Utility;
 using LinkedInHelper.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
@@ -8,8 +10,11 @@ namespace LinkedInHelper.Services
 {
     public class UserService : IUserService
     {
-        public UserService()
+        private readonly ILogger<UserService> _logger;
+
+        public UserService(ILogger<UserService> logger)
         {
+            _logger = logger;
         }
 
         public async Task<string> GetProfilePhotoUrl(string accessToken)
@@ -17,14 +22,14 @@ namespace LinkedInHelper.Services
             var userInfo = await GetUserInfo(accessToken);
             if (userInfo == null)
             {
-                Console.WriteLine("Error obtaining user information.");
+                _logger.LogError("Error obtaining user information.");
                 return string.Empty;
             }
 
             string? imageUrl = userInfo["picture"]?.ToString();
             if (string.IsNullOrEmpty(imageUrl))
             {
-                Console.WriteLine("User image not found.");
+                _logger.LogError("User image not found.");
                 return string.Empty;
             }
 
@@ -38,6 +43,7 @@ namespace LinkedInHelper.Services
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 var response = await httpClient.GetAsync(UriConstant.UserInfoUri);
+
                 if (!response.IsSuccessStatusCode)
                     return null;
 
@@ -45,7 +51,7 @@ namespace LinkedInHelper.Services
             }
         }
 
-        public async Task<string?> GetAccessToken(string code)
+        public async Task<AccessToken> GetAccessToken(string code)
         {
             string clientId = "781yx90d0ucy7x";
             string clientSecret = "EuS13Ic8CPrZ2epT";
@@ -62,12 +68,19 @@ namespace LinkedInHelper.Services
                 });
 
                 var response = await httpClient.PostAsync(UriConstant.AccessTokenUri, requestParams);
+
                 if (!response.IsSuccessStatusCode)
                     return null;
 
                 var result = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()) as JObject;
 
-                return result?["access_token"]?.ToString();
+                var accessToken = new AccessToken()
+                {
+                    Value = result?["access_token"]?.ToString(),
+                    ExpiresIn = DateTime.Now.AddSeconds((int)result["expires_in"]),
+                };
+                
+                return accessToken;
             }
         }
     }

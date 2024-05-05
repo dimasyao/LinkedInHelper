@@ -1,21 +1,23 @@
 ﻿using LH.FileManager.Interfaces;
+using LH.Models;
 using LH.Utility;
 using LinkedInHelper.Services.Interfaces;
+using Newtonsoft.Json;
 
 namespace LinkedInHelper.Services
 {
     public class ProgramExecutorService : IProgramExecutorService
     {
-        private readonly ITextFile _fileHandler;
-        private readonly IImageFile _imageHandler;
+        private readonly ITextFile _textFile;
+        private readonly IImageFile _imageFile;
         private readonly IUserService _userService;
 
         private readonly ILogger _logger;
 
-        public ProgramExecutorService(ITextFile fileHandler, IImageFile imageHandler, ILogger<ProgramExecutorService> logger, IUserService userService)
+        public ProgramExecutorService(ITextFile textFile, IImageFile imageFile, ILogger<ProgramExecutorService> logger, IUserService userService)
         {
-            _fileHandler = fileHandler;
-            _imageHandler = imageHandler;
+            _textFile = textFile;
+            _imageFile = imageFile;
             _userService = userService;
 
             _logger = logger;
@@ -23,18 +25,18 @@ namespace LinkedInHelper.Services
 
         public async void Execute()
         {
-            var accessToken = _fileHandler.ReadDataFromFile(FilePath.Credentials, fileName: "AccessToken.txt");
+            var accessToken = JsonConvert.DeserializeObject<AccessToken>(_textFile.ReadDataFromFile(FilePath.Credentials, fileName: FileNameConstant.AccessToken));
 
-            if (accessToken == null)
+            if (accessToken == null || accessToken.Value == null)
             {
                 _logger.LogError("Error obtaining access token.");
 
                 return;
             }
 
-            var imageUrl = await _userService.GetProfilePhotoUrl(accessToken);
+            var imageUrl = await _userService.GetProfilePhotoUrl(accessToken.Value);
 
-            await _imageHandler.DownloadAndSave(imageUrl);
+            await _imageFile.DownloadAndSave(imageUrl);
 
             Environment.Exit(0);
         }
