@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="CSS/Authorization.css">
+</head>
+<body>
+    <p class="message">To perform the work, you need to be authorized through LinkedIn!</p>
+
+    <button class="authorization-button" onclick="redirectToLinkedIn()">Authorization via LinkedIn</button>
+
+    <script>
+        function redirectToLinkedIn() {
+            var client_id = "781yx90d0ucy7x";
+            var redirect_uri = encodeURIComponent("http://localhost:5000/api/LInCallback");
+            var authorizationUrl = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&state=foobar&scope=openid,profile";
+            window.location.href = authorizationUrl;
+        }
+    </script>
+</body>
+</html>
