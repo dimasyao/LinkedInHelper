@@ -1,7 +1,6 @@
 ﻿using LH.Models;
 using LH.Utility;
 using LinkedInHelper.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.BearerToken;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
@@ -70,7 +69,10 @@ namespace LinkedInHelper.Services
                 var response = await httpClient.PostAsync(UriConstant.AccessTokenUri, requestParams);
 
                 if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogError("The linkedin server is not responding");
                     return null;
+                }
 
                 var result = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()) as JObject;
 

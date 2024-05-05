@@ -1,7 +1,5 @@
-﻿using LH.Models;
-using LH.Utility;
+﻿using LH.Utility;
 using LinkedInHelper.Services.Interfaces;
-using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace LinkedInHelper.Extensions

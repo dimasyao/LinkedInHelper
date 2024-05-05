@@ -1,10 +1,8 @@
 using LH.FileManager;
 using LH.FileManager.Interfaces;
-using LH.Utility;
 using LinkedInHelper.Extensions;
 using LinkedInHelper.Services;
 using LinkedInHelper.Services.Interfaces;
-using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
